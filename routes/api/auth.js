@@ -3,8 +3,12 @@ const router = express.Router();
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 
+// Load Input Validation
+// const validateRegisterInput = require("../../validation/register");
+// const validateLoginInput = require('../../validation/login');
+
 // Load Auth Model
-const Auth = require("../../models/Auth");
+const User = require("../../models/Auth");
 // @route   GET api/auth/test
 // @desc    Tests auth route
 // @access  Public
@@ -14,7 +18,14 @@ router.get("/test", (req, res) => res.json({ msg: "Auth Works!" }));
 // @desc    Register user
 // @access  Public
 router.post("/register", (req, res) => {
-  Auth.findOne({ email: req.body.email }).then(user => {
+  // const { errors, isValid } = validateRegisterInput(req.body);
+
+  // Check Validation
+  // if (!isValid) {
+  //   return res.status(400).json(errors);
+  // }
+
+  User.findOne({ email: req.body.email }).then(user => {
     if (user) {
       return res.status(400).json({ email: "Email already exists" });
     } else {
@@ -23,7 +34,7 @@ router.post("/register", (req, res) => {
         r: "pg", // rating
         d: "mm" // default to initials
       });
-      const newUser = newUser({
+      const newUser = new User({
         name: req.body.name,
         email: req.body.email,
         avatar: avatar,

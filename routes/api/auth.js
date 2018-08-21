@@ -38,7 +38,8 @@ router.post("/register", (req, res) => {
         name: req.body.name,
         email: req.body.email,
         avatar: avatar,
-        password: req.body.password
+        password: req.body.password,
+        twitter: req.body.twitter
       });
 
       bcrypt.genSalt(10, (err, salt) => {
@@ -52,6 +53,30 @@ router.post("/register", (req, res) => {
         });
       });
     }
+  });
+});
+
+// @route   GET api/auth/login
+// @desc    Login user / Return JWT Token
+// @access  Public
+router.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.email;
+
+  // Find user by email
+  User.findOne({ email: email }).then(user => {
+    // Check for user
+    if (!user) {
+      return res.status(404).json({ email: "User not found" });
+    }
+    // Check Password
+    bcrypt.compare(password, user.password).then(isMatch => {
+      if (isMatch) {
+        res.json({ msg: "Success" });
+      } else {
+        return res.status(400).json({ password: "Password incorrect" });
+      }
+    });
   });
 });
 
